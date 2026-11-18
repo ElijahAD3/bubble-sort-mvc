@@ -1,0 +1,12 @@
+@model TrainingUploadViewModel
+@{
+    ViewData["Title"] = "Train models";
+}
+<h1>Train and compare models</h1>
+<p>Upload a UTF-8 CSV with a header, 30–2,000 data rows, and 3–20 columns (maximum 1 MB). You will choose one categorical target and one numeric target; all other columns become features. Your dataset is saved to your account.</p>
+<form asp-action="Index" method="post" enctype="multipart/form-data" class="col-md-8">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3"><label asp-for="File" class="form-label"></label><input asp-for="File" type="file" accept=".csv,text/csv" class="form-control" /></div>
+    <button class="btn btn-primary" type="submit">Upload dataset</button>
+    <a class="btn btn-outline-secondary" asp-action="History">Saved datasets and results</a>
+</form>

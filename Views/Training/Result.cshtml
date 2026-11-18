@@ -1,0 +1,19 @@
+@model TrainingRun
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Training result";
+    var result = JsonSerializer.Deserialize<TrainingResults>(Model.ResultsJson)!;
+}
+<h1>Training result</h1>
+<p>Dataset: @Model.Dataset.FileName. Classification target: @Model.ClassificationTarget; regression target: @Model.RegressionTarget.</p>
+<p>Training rows: @result.TrainRows; held-out rows: @result.TestRows. Accuracy is higher-is-better; RMSE is lower-is-better.</p>
+<table class="table">
+    <thead><tr><th>Model</th><th>Classification accuracy</th><th>Regression RMSE</th></tr></thead>
+    <tbody>
+        <tr><td>Random forest</td><td>@result.ForestAccuracy.ToString("F4")</td><td>—</td></tr>
+        <tr><td>Linear regression</td><td>—</td><td>@result.LinearRmse.ToString("F4")</td></tr>
+        <tr><td>Tabular transformer</td><td>@result.TransformerAccuracy.ToString("F4")</td><td>@result.TransformerRmse.ToString("F4")</td></tr>
+    </tbody>
+</table>
+<p>The transformer was trained with @result.TransformerOptimizer for @result.TransformerEpochs epochs. Results are saved; model weights are not saved.</p>
+<a asp-action="History">Saved datasets and results</a>

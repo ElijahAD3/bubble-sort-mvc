@@ -1,0 +1,25 @@
+@model TrainingHistoryViewModel
+@{
+    ViewData["Title"] = "Datasets and results";
+}
+<h1>Saved datasets and results</h1>
+<h2 class="h4">Datasets</h2>
+@if (Model.Datasets.Count == 0) { <p>No datasets saved yet.</p> }
+<ul>
+@foreach (var dataset in Model.Datasets)
+{
+    <li>@dataset.FileName (@dataset.RowCount rows) —
+        <a asp-action="Train" asp-route-id="@dataset.Id">Train</a> |
+        <a asp-action="Download" asp-route-id="@dataset.Id">Download CSV</a></li>
+}
+</ul>
+<h2 class="h4">Training results</h2>
+@if (Model.Runs.Count == 0) { <p>No training results saved yet.</p> }
+<ul>
+@foreach (var run in Model.Runs)
+{
+    <li><a asp-action="Result" asp-route-id="@run.Id">@run.Dataset.FileName — @run.CreatedUtc.ToString("yyyy-MM-dd HH:mm") UTC</a>
+        (@run.ClassificationTarget / @run.RegressionTarget)</li>
+}
+</ul>
+<a asp-action="Index">Upload another dataset</a>

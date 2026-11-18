@@ -1,0 +1,25 @@
+@model SortViewModel
+@{
+    ViewData["Title"] = "Sort values";
+}
+<h1>Sort values</h1>
+<p>Enter up to 100 values, one per line. AI classifies the list as numbers, text, or ISO dates (YYYY-MM-DD), then Python sorts it with bubble sort. Each successful sort is saved to your account.</p>
+<form asp-action="Index" method="post" class="col-md-8">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Values" class="form-label"></label>
+        <textarea asp-for="Values" class="form-control" rows="8" placeholder="5&#10;1&#10;4"></textarea>
+    </div>
+    <button class="btn btn-primary" type="submit">Classify and sort</button>
+    <a class="btn btn-outline-secondary" asp-action="History">View saved sorts</a>
+</form>
+@if (Model.SortedValues != null)
+{
+    <h2 class="h4 mt-4">Sorted result (@Model.DataType)</h2>
+    <ol id="sort-result">
+    @foreach (var value in Model.SortedValues)
+    {
+        <li>@value</li>
+    }
+    </ol>
+}

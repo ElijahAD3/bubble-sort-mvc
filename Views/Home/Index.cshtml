@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"] = "Bubble Sort";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Bubble Sort</h1>
+    <p>Use AI to classify your data, then sort it using bubble sort written in Python.</p>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <a class="btn btn-primary" asp-controller="Sort" asp-action="Index">Start sorting</a>
+    }
+    else
+    {
+        <p><a asp-controller="Account" asp-action="Register">Create an account</a> or
+            <a asp-controller="Account" asp-action="Login">log in</a> to get started.</p>
+    }
+</div>

@@ -1,0 +1,22 @@
+@model TrainingFormViewModel
+@{
+    ViewData["Title"] = "Select targets";
+}
+<h1>Select targets</h1>
+<p>Dataset: @Model.FileName (@Model.RowCount rows). Training runs locally and can take up to two minutes.</p>
+<form asp-action="Train" asp-route-id="@Model.DatasetId" method="post" class="col-md-6">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="ClassificationTarget" class="form-label"></label>
+        <select asp-for="ClassificationTarget" class="form-select"><option value="">Select a column</option>
+        @foreach (var column in Model.Columns) { <option value="@column">@column</option> }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="RegressionTarget" class="form-label"></label>
+        <select asp-for="RegressionTarget" class="form-select"><option value="">Select a column</option>
+        @foreach (var column in Model.Columns) { <option value="@column">@column</option> }
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Train models</button>
+</form>

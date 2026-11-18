@@ -1,0 +1,25 @@
+@model IReadOnlyList<SavedSort>
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Saved sorts";
+}
+<h1>Saved sorts</h1>
+@if (Model.Count == 0)
+{
+    <p>You have no saved sorts yet.</p>
+}
+@foreach (var item in Model)
+{
+    <section class="card mb-3">
+        <div class="card-body">
+            <h2 class="h5">@item.DataType <small class="text-muted">@item.CreatedUtc.ToString("yyyy-MM-dd HH:mm") UTC</small></h2>
+            <p class="mb-1">Original:</p>
+            <ul>@foreach (var value in JsonSerializer.Deserialize<string[]>(item.OriginalJson)!)
+                { <li>@value</li> }</ul>
+            <p class="mb-1">Sorted:</p>
+            <ol>@foreach (var value in JsonSerializer.Deserialize<string[]>(item.SortedJson)!)
+                { <li>@value</li> }</ol>
+        </div>
+    </section>
+}
+<a asp-action="Index">Sort another list</a>
