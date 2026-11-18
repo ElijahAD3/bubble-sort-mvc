@@ -2,6 +2,7 @@ using BubbleSortMvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace BubbleSortMvc.Controllers;
 
@@ -10,7 +11,7 @@ public class AccountController(UserManager<IdentityUser> users, SignInManager<Id
     [HttpGet]
     public IActionResult Register() => View(new RegisterViewModel());
 
-    [HttpPost, ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken, EnableRateLimiting("auth")]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
@@ -30,7 +31,7 @@ public class AccountController(UserManager<IdentityUser> users, SignInManager<Id
     [HttpGet]
     public IActionResult Login(string? returnUrl = null) => View(new LoginViewModel { ReturnUrl = returnUrl });
 
-    [HttpPost, ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken, EnableRateLimiting("auth")]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
         if (!ModelState.IsValid) return View(model);

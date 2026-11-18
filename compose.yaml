@@ -1,0 +1,52 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ConnectionStrings__DefaultConnection: Data Source=/data/app.db;Cache=Shared
+      DataProtection__KeysPath: /data/keys
+      ReverseProxy__KnownProxy: 172.30.193.2
+      Ai__Provider: ${AI_PROVIDER:-Ollama}
+      Ai__Endpoint: ${AI_ENDPOINT:-http://ollama:11434}
+      Ai__Model: ${AI_MODEL:-llama3.2:1b}
+      Ai__ApiKey: ${AI_API_KEY:-}
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - app_data:/data
+    cpus: 2
+    mem_limit: 4g
+    networks:
+      - app_network
+
+  ollama:
+    image: ollama/ollama:0.40.16
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    cpus: 2
+    mem_limit: 4g
+    networks:
+      - app_network
+
+  cloudflared:
+    image: cloudflare/cloudflared:2026.11.1
+    profiles: ["cloudflare"]
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    networks:
+      app_network:
+        ipv4_address: 172.30.193.2
+
+volumes:
+  app_data:
+  ollama_data:
+
+networks:
+  app_network:
+    ipam:
+      config:
+        - subnet: 172.30.193.0/24

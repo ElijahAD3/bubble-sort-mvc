@@ -35,6 +35,8 @@ The SQLite database is automatically migrated as `app.db` in the application's w
 
 Configure the interpreter using `PythonExecutable` (for example `python` on Windows). Python runs on the server, not in the browser. The Python script is included in published output.
 
+The appearance controls default to the browser's system light/dark setting. Users can choose light or dark and a blue, purple, or teal accent; choices are stored in that browser, not in the account.
+
 ## AI providers and free models
 
 The default provider is Ollama at `http://127.0.0.1:11434` using `llama3.2:1b`. This model can be downloaded and run locally without a per-request API charge; another free-to-download choice is `qwen2.5:0.5b`. Set `Ai__Model` to the installed model name and run `ollama pull` for that name first. Model licenses and hardware requirements vary; review the model's license before use. Small models can misclassify data.
@@ -60,6 +62,30 @@ The local Python pipeline uses the same deterministic, stratified holdout for al
 
 Uploaded CSV data and metrics are stored in SQLite and can be retrieved from the account's training history. Model weights are not saved. Dataset contents never go to the configured sorting AI provider. SQLite is not encrypted by default; do not upload sensitive data unless the deployment has appropriate safeguards. Opening a downloaded CSV in spreadsheet software can execute formulas embedded in untrusted data.
 
-For production, configure HTTPS, secure persistent storage for the SQLite database and ASP.NET Core data-protection keys, restrict account registration, and enforce resource quotas and concurrency limits for training. This sample does not provide password recovery or email verification.
+## Server and Cloudflare preparation
 
-After building with `dotnet build`, run `python -m unittest discover -s tests` inside the virtual environment. The web integration tests use mock Ollama and OpenAI-compatible services; they do not verify a real model's classifications.
+The included Docker Compose setup runs the ASP.NET/Python app, a local Ollama server, and an optional Cloudflare Tunnel. Cloudflare provides the HTTPS entry point; it does **not** run the ASP.NET app, Python training, or SQLite database. You need a Linux VPS or server with Docker Compose, a Cloudflare account, and a domain managed by Cloudflare. A starting point for the included CPU-only setup is 4 vCPUs, 8 GB RAM, and 25 GB disk; actual requirements depend on datasets, model size, and traffic.
+
+On the server, clone the repository, then:
+
+```sh
+cp .env.example .env
+chmod 600 .env
+docker compose up -d --build
+docker compose exec ollama ollama pull llama3.2:1b
+```
+
+In the Cloudflare dashboard, create a **remotely managed tunnel** and configure a public hostname whose service URL is `http://app:8080`. Put the tunnel token in `CLOUDFLARE_TUNNEL_TOKEN` in `.env`, then start it:
+
+```sh
+docker compose --profile cloudflare up -d
+docker compose logs -f app cloudflared
+```
+
+Open the configured **HTTPS** hostname. The app port is bound only to the server's loopback interface; it is not intended as a public HTTP entry point. Production cookies require HTTPS. The tunnel container is the only proxy whose forwarded headers the app trusts, at `172.30.193.2` on the Compose network. If that subnet conflicts with your server, change both the Compose subnet/address and `ReverseProxy__KnownProxy` together. Keep the token and `.env` private; never commit them.
+
+The `app_data` volume holds both the SQLite database and ASP.NET data-protection keys, and `ollama_data` holds downloaded models. Back up both the database and keys securely; stop the app before copying the SQLite files for a consistent backup. Do not remove the volumes if you need to retain users and data. For an external AI provider, set `AI_PROVIDER`, `AI_ENDPOINT`, `AI_MODEL`, and, if required, `AI_API_KEY` in `.env`; entered sorting data will be sent to that provider.
+
+This is a deployment starting point, not a fully hardened public service. The app rate-limits login/registration by IP and allows one training job at a time per app process. For real public use, add authentication and registration protections such as Cloudflare Access, durable job processing, stronger quotas, monitoring, backups, and appropriate security/privacy controls. Long synchronous training requests may exceed Cloudflare's request timeout. The sample does not provide password recovery or email verification, and its SQLite data-protection keys are not encrypted at rest by default.
+
+After building with `dotnet build`, run `python -m unittest discover -s tests` inside the virtual environment and `node --test tests/appearance.test.cjs` for appearance controls. The web integration tests use mock Ollama and OpenAI-compatible services; they do not verify a real model's classifications.

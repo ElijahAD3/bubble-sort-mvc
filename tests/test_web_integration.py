@@ -191,7 +191,7 @@ class WebIntegrationTests(unittest.TestCase):
         })
         _, history = self.get(bob, "/Sort/History")
         self.assertIn("no saved sorts", history)
-        self.assertNotIn("pear", history)
+        self.assertNotIn("<li>pear</li>", history)
 
         self.post(alice, "/Account/Logout", {}, token_path="/Sort")
         _, page = self.post(alice, "/Account/Login", {"Username": "alice", "Password": "incorrect"})
@@ -245,6 +245,17 @@ class WebIntegrationTests(unittest.TestCase):
         self.assertIn("sample.csv", page)
         _, page = self.get(other, "/Training/History")
         self.assertNotIn("sample.csv", page)
+
+    def test_z_auth_rate_limit(self):
+        client = self.client()
+        for _ in range(15):
+            try:
+                self.post(client, "/Account/Login", {"Username": "nobody", "Password": "wrong"})
+            except urllib.error.HTTPError as error:
+                self.assertEqual(error.code, 429)
+                break
+        else:
+            self.fail("Repeated login attempts were not rate limited.")
 
 
 class OpenAICompatibleIntegrationTests(WebIntegrationTests):

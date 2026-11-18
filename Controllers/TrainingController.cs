@@ -6,6 +6,7 @@ using BubbleSortMvc.Models;
 using BubbleSortMvc.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace BubbleSortMvc.Controllers;
@@ -69,7 +70,7 @@ public class TrainingController(ApplicationDbContext db, TrainingService trainin
         return dataset is null ? NotFound() : View(FormFor(dataset));
     }
 
-    [HttpPost, ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken, EnableRateLimiting("training")]
     public async Task<IActionResult> Train(int id, TrainingFormViewModel model, CancellationToken cancellationToken)
     {
         var dataset = await db.TrainingDatasets.AsNoTracking().SingleOrDefaultAsync(d => d.Id == id && d.UserId == UserId, cancellationToken);

@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BubbleSortMvc</title>
+    <script src="~/js/appearance.js" asp-append-version="true"></script>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -11,7 +12,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-body-tertiary border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Bubble Sort</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -21,16 +22,31 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Sort" asp-action="Index">Sort values</a>
+                            <a class="nav-link" asp-area="" asp-controller="Sort" asp-action="Index">Sort values</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Training" asp-action="Index">Train models</a>
+                            <a class="nav-link" asp-area="" asp-controller="Training" asp-action="Index">Train models</a>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />
+                    <div class="appearance-controls ms-sm-3">
+                        <label for="theme-choice" class="visually-hidden">Theme</label>
+                        <select id="theme-choice" class="form-select form-select-sm" aria-label="Theme">
+                            <option value="system">System theme</option>
+                            <option value="light">Light theme</option>
+                            <option value="dark">Dark theme</option>
+                        </select>
+                        <label for="accent-choice" class="visually-hidden">Accent color</label>
+                        <select id="accent-choice" class="form-select form-select-sm" aria-label="Accent color">
+                            <option value="blue">Blue</option>
+                            <option value="purple">Purple</option>
+                            <option value="teal">Teal</option>
+                        </select>
+                        <span id="appearance-status" class="small text-warning" role="status"></span>
+                    </div>
                 </div>
             </div>
         </nav>

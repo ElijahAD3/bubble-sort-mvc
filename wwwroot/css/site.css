@@ -8,8 +8,47 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+:root {
+  --app-accent: #0b5ed7;
+  --app-accent-hover: #084bb2;
+  --app-link: #084bb2;
+}
+
+html[data-accent="purple"] {
+  --app-accent: #6941b7;
+  --app-accent-hover: #533195;
+  --app-link: #533195;
+}
+
+html[data-accent="teal"] {
+  --app-accent: #087565;
+  --app-accent-hover: #06594d;
+  --app-link: #06594d;
+}
+
+html[data-bs-theme="dark"] {
+  --app-link: #9ac3ff;
+}
+
+html[data-bs-theme="dark"][data-accent="purple"] {
+  --app-link: #d0baff;
+}
+
+html[data-bs-theme="dark"][data-accent="teal"] {
+  --app-link: #72dfce;
+}
+
+a:not(.btn):not(.nav-link):not(.navbar-brand) {
+  color: var(--app-link);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--app-accent);
+  --bs-btn-border-color: var(--app-accent);
+  --bs-btn-hover-bg: var(--app-accent-hover);
+  --bs-btn-hover-border-color: var(--app-accent-hover);
+  --bs-btn-active-bg: var(--app-accent-hover);
+  --bs-btn-active-border-color: var(--app-accent-hover);
 }
 
 html {
